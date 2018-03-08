@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.GoodssoldDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.GoodssoldEntity" id="goodssoldMap">
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsNo" column="goods_no"/>
+        <result property="batNo" column="bat_no"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.GoodssoldEntity">
+		select * from goodssold where goods_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.GoodssoldEntity">
+		select * from goodssold
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by goods_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from goodssold 
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.GoodssoldEntity">
+		insert into goodssold
+		(
+			`goods_id`, 
+			`goods_no`, 
+			`bat_no`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{goodsId}, 
+			#{goodsNo}, 
+			#{batNo}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.GoodssoldEntity">
+		update goodssold 
+		<set>
+			<if test="goodsNo != null">`goods_no` = #{goodsNo}, </if>
+			<if test="batNo != null">`bat_no` = #{batNo}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where goods_id = #{goodsId}
+	</update>
+	
+	<delete id="delete">
+		delete from goodssold where goods_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from goodssold where goods_id in 
+		<foreach item="goodsId" collection="array" open="(" separator="," close=")">
+			#{goodsId}
+		</foreach>
+	</delete>
+
+</mapper>

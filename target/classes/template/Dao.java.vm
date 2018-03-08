@@ -1,0 +1,17 @@
+package ${package}.dao;
+
+import ${package}.entity.${className}Entity;
+import org.apache.ibatis.annotations.Mapper;
+import io.sunny.modules.sys.dao.BaseDao;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date 2017年1月19日 上午10:10:10
+ */
+@Mapper
+public interface ${className}Dao extends BaseDao<${className}Entity> {
+	
+}

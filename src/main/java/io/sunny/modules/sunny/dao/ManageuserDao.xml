@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.ManageuserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.ManageuserEntity" id="manageuserMap">
+        <result property="managerId" column="manager_id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="name" column="name"/>
+        <result property="nationCode" column="nation_code"/>
+        <result property="mblNo" column="mbl_no"/>
+        <result property="managerAddr" column="manager_addr"/>
+        <result property="provCd" column="prov_cd"/>
+        <result property="cityCd" column="city_cd"/>
+        <result property="countryCd" column="country_cd"/>
+        <result property="password" column="password"/>
+        <result property="code" column="code"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.ManageuserEntity">
+		select * from manageuser where manager_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.ManageuserEntity">
+		select * from manageuser
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by manager_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from manageuser 
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.ManageuserEntity">
+		insert into manageuser
+		(
+			`manager_id`, 
+			`login_name`, 
+			`name`, 
+			`nation_code`, 
+			`mbl_no`, 
+			`manager_addr`, 
+			`prov_cd`, 
+			`city_cd`, 
+			`country_cd`, 
+			`password`, 
+			`code`
+		)
+		values
+		(
+			#{managerId}, 
+			#{loginName}, 
+			#{name}, 
+			#{nationCode}, 
+			#{mblNo}, 
+			#{managerAddr}, 
+			#{provCd}, 
+			#{cityCd}, 
+			#{countryCd}, 
+			#{password}, 
+			#{code}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.ManageuserEntity">
+		update manageuser 
+		<set>
+			<if test="loginName != null">`login_name` = #{loginName}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="nationCode != null">`nation_code` = #{nationCode}, </if>
+			<if test="mblNo != null">`mbl_no` = #{mblNo}, </if>
+			<if test="managerAddr != null">`manager_addr` = #{managerAddr}, </if>
+			<if test="provCd != null">`prov_cd` = #{provCd}, </if>
+			<if test="cityCd != null">`city_cd` = #{cityCd}, </if>
+			<if test="countryCd != null">`country_cd` = #{countryCd}, </if>
+			<if test="password != null">`password` = #{password}, </if>
+			<if test="code != null">`code` = #{code}</if>
+		</set>
+		where manager_id = #{managerId}
+	</update>
+	
+	<delete id="delete">
+		delete from manageuser where manager_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from manageuser where manager_id in 
+		<foreach item="managerId" collection="array" open="(" separator="," close=")">
+			#{managerId}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://172.16.0.13:3306/sunnyui?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      username: sunuiadm
+      password: sunuiadm#123
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+custom:
+  datasource:
+    name: sunny
+    sunny:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://172.16.0.13:3306/sunny?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      username: sunadm
+      password: sunadm#123
+wechat:
+  appid: wx0f5c757aed155fbf
+  sercret: 141b0ca1335e2bdb4f696cb76ac9ca6b
+  access-token-url: https://api.weixin.qq.com/cgi-bin/token
+  acode-url: https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=
+  acode-path: /Users/zhang_dy/Desktop
+interfaceUrl:
+  mercurl: http://www.omeikong.com/app/ckShop/

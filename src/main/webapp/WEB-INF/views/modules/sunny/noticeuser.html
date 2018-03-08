@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<#if shiro.hasPermission("noticeuser:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("noticeuser:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("noticeuser:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">手机号码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.mblNo" placeholder="手机号码"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">姓名</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.userNm" placeholder="姓名"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">性别</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.userSex" placeholder="性别"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">通知开始时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.beginTm" placeholder="通知开始时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">通知结束时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.endTm" placeholder="通知结束时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">管理省份</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.mngProv" placeholder="管理省份"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">管理地市</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.mngCity" placeholder="管理地市"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">管理县区</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.mngCountry" placeholder="管理县区"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">是否开启 1开启 0 关闭</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.status" placeholder="是否开启 1开启 0 关闭"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">时间戳</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="noticeuser.tmSmp" placeholder="时间戳"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/sunny/noticeuser.js?_${.now?long}"></script>
+</body>
+</html>

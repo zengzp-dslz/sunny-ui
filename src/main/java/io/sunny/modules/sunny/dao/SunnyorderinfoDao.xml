@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnyorderinfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnyorderinfoEntity" id="sunnyorderinfoMap">
+        <result property="ordNo" column="ord_no"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsNo" column="goods_no"/>
+        <result property="batNo" column="bat_no"/>
+        <result property="goodsBid" column="goods_bid"/>
+        <result property="tmSmp" column="tm_smp"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsType" column="goods_type"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnyorderinfoEntity">
+		select * from sunnyorderinfo where ord_no = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnyorderinfoEntity">
+		select a.*,b.goods_name,b.goods_type from sunnyorderinfo a left join sunnygoods b on a.goods_id=b.goods_id left join sunnyorder c on a.ord_no=c.ord_no
+		<where>
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and a.ord_no like concat('%',#{ordNo},'%')
+			</if>
+			<if test="starDate != null and starDate.trim() != ''">
+				and a.tm_smp &gt;= #{starDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and a.tm_smp &lt;= #{endDate}
+			</if>
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and c.merc_id = #{mercId}
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by a.tm_smp desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sunnyorderinfo a left join sunnygoods b on a.goods_id=b.goods_id left join sunnyorder c on a.ord_no=c.ord_no 
+		<where>
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and a.ord_no like concat('%',#{ordNo},'%')
+			</if>
+			<if test="starDate != null and starDate.trim() != ''">
+				and a.tm_smp &gt;= #{starDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and a.tm_smp &lt;= #{endDate}
+			</if>
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and c.merc_id = #{mercId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryPageCount" resultType="int">
+		select count(*) from sunnyorderinfo
+		<where> 
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and ord_no = #{ordNo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryPageList" resultType="io.sunny.modules.sunny.entity.SunnyorderinfoEntity">
+		select a.*,b.goods_name,b.goods_type from sunnyorderinfo a left join sunnygoods b on a.goods_id=b.goods_id
+		<where> 
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and a.ord_no = #{ordNo}
+			</if>
+		</where>
+		 order by a.tm_smp desc limit #{offset}, 10
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnyorderinfoEntity">
+		insert into sunnyorderinfo
+		(
+			`ord_no`, 
+			`goods_id`, 
+			`goods_no`, 
+			`bat_no`, 
+			`goods_bid`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{ordNo}, 
+			#{goodsId}, 
+			#{goodsNo}, 
+			#{batNo}, 
+			#{goodsBid}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnyorderinfoEntity">
+		update sunnyorderinfo 
+		<set>
+			<if test="goodsId != null">`goods_id` = #{goodsId}, </if>
+			<if test="goodsNo != null">`goods_no` = #{goodsNo}, </if>
+			<if test="batNo != null">`bat_no` = #{batNo}, </if>
+			<if test="goodsBid != null">`goods_bid` = #{goodsBid}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where ord_no = #{ordNo}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnyorderinfo where ord_no = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnyorderinfo where ord_no in 
+		<foreach item="ordNo" collection="array" open="(" separator="," close=")">
+			#{ordNo}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnystocklogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnystocklogEntity" id="sunnystocklogMap">
+        <result property="stocklogId" column="stocklog_id"/>
+        <result property="method" column="method"/>
+        <result property="params" column="params"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnystocklogEntity">
+		select * from sunnystocklog where stocklog_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnystocklogEntity">
+		select * from sunnystocklog
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by stocklog_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sunnystocklog 
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnystocklogEntity">
+		insert into sunnystocklog
+		(
+			`stocklog_id`,
+			`method`, 
+			`params`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{stocklogId},
+			#{method}, 
+			#{params}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnystocklogEntity">
+		update sunnystocklog 
+		<set>
+			<if test="method != null">`method` = #{method}, </if>
+			<if test="params != null">`params` = #{params}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where stocklog_id = #{stocklogId}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnystocklog where stocklog_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnystocklog where stocklog_id in 
+		<foreach item="stocklogId" collection="array" open="(" separator="," close=")">
+			#{stocklogId}
+		</foreach>
+	</delete>
+
+</mapper>

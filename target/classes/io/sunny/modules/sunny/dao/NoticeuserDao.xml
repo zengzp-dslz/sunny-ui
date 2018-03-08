@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.NoticeuserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.NoticeuserEntity" id="noticeuserMap">
+        <result property="nationCode" column="nation_code"/>
+        <result property="mblNo" column="mbl_no"/>
+        <result property="userNm" column="user_nm"/>
+        <result property="userSex" column="user_sex"/>
+        <result property="beginTm" column="begin_tm"/>
+        <result property="endTm" column="end_tm"/>
+        <result property="mngProv" column="mng_prov"/>
+        <result property="mngCity" column="mng_city"/>
+        <result property="mngCountry" column="mng_country"/>
+        <result property="status" column="status"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.NoticeuserEntity">
+		select * from noticeuser where nation_code = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.NoticeuserEntity">
+		select * from noticeuser
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by nation_code desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from noticeuser 
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.NoticeuserEntity">
+		insert into noticeuser
+		(
+			`nation_code`, 
+			`mbl_no`, 
+			`user_nm`, 
+			`user_sex`, 
+			`begin_tm`, 
+			`end_tm`, 
+			`mng_prov`, 
+			`mng_city`, 
+			`mng_country`, 
+			`status`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{nationCode}, 
+			#{mblNo}, 
+			#{userNm}, 
+			#{userSex}, 
+			#{beginTm}, 
+			#{endTm}, 
+			#{mngProv}, 
+			#{mngCity}, 
+			#{mngCountry}, 
+			#{status}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.NoticeuserEntity">
+		update noticeuser 
+		<set>
+			<if test="mblNo != null">`mbl_no` = #{mblNo}, </if>
+			<if test="userNm != null">`user_nm` = #{userNm}, </if>
+			<if test="userSex != null">`user_sex` = #{userSex}, </if>
+			<if test="beginTm != null">`begin_tm` = #{beginTm}, </if>
+			<if test="endTm != null">`end_tm` = #{endTm}, </if>
+			<if test="mngProv != null">`mng_prov` = #{mngProv}, </if>
+			<if test="mngCity != null">`mng_city` = #{mngCity}, </if>
+			<if test="mngCountry != null">`mng_country` = #{mngCountry}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where nation_code = #{nationCode}
+	</update>
+	
+	<delete id="delete">
+		delete from noticeuser where nation_code = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from noticeuser where nation_code in 
+		<foreach item="nationCode" collection="array" open="(" separator="," close=")">
+			#{nationCode}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnyorderDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnyorderEntity" id="sunnyorderMap">
+        <result property="ordNo" column="ord_no"/>
+        <result property="ordDt" column="ord_dt"/>
+        <result property="ordTm" column="ord_tm"/>
+        <result property="ordAmt" column="ord_amt"/>
+        <result property="freeAmt" column="free_amt"/>
+        <result property="payAmt" column="pay_amt"/>
+        <result property="ordSts" column="ord_sts"/>
+        <result property="mercId" column="merc_id"/>
+        <result property="userType" column="user_type"/>
+        <result property="useId" column="use_id"/>
+        <result property="payDt" column="pay_dt"/>
+        <result property="payTm" column="pay_tm"/>
+        <result property="tmSmp" column="tm_smp"/>
+        <result property="mblNo" column="mbl_no"/>
+        <result property="mblNo" column="mbl_no"/>
+        <result property="ordStatus" column="ord_status"/>
+    </resultMap>
+    
+     <resultMap type="io.sunny.modules.sunny.entity.SunnysaleEntity" id="sunnysaleMap">
+        <result property="ordDt" column="ord_dt"/>
+        <result property="payAmt" column="pay_amt"/>
+        <result property="costAmt" column="cost_amt"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnyorderEntity">
+		select * from sunnyorder where ord_no = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnyorderEntity">
+		select a.*, case a.ord_sts when 'S' THEN '成功' when 'C' then '取消' when 'w' then '待支付' end as ord_status , b.mbl_no from sunnyorder a left join sunnyuser b on a.use_id=b.user_id
+		<where>
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and a.ord_no like concat('%',#{ordNo},'%')
+			</if>
+			<if test="mblNo != null and mblNo.trim() != ''">
+				and b.mbl_no like concat('%',#{mblNo},'%')
+			</if>
+			<if test="starDate != null and starDate.trim() != ''">
+				and a.ord_dt &gt;= #{starDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and a.ord_dt &lt;= #{endDate}
+			</if>
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and a.merc_id = #{mercId}
+			</if>
+			<if test="ordSts == 0 ">
+				and a.ord_sts &lt;&gt; 'U'
+			</if>
+			<if test="ordSts == 1">
+				and a.ord_sts = 'S'
+			</if>
+			<if test="ordSts == 2">
+				and a.ord_sts = 'C'
+			</if>
+			<if test="ordSts == 3">
+				and a.ord_sts = 'W'
+			</if>
+		</where> 
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by a.ord_no desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(a.ord_no) from sunnyorder a left join sunnyuser b on a.use_id=b.user_id
+		<where>
+			<if test="ordNo != null and ordNo.trim() != ''">
+				and a.ord_no like concat('%',#{ordNo},'%')
+			</if>
+			<if test="mblNo != null and mblNo.trim() != ''">
+				and b.mbl_no like concat('%',#{mblNo},'%')
+			</if>
+			<if test="starDate != null and starDate.trim() != ''">
+				and a.ord_dt &gt;= #{starDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and a.ord_dt &lt;= #{endDate}
+			</if>
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and a.merc_id = #{mercId}
+			</if>
+			<if test="ordSts == 0 ">
+				and a.ord_sts &lt;&gt; 'U'
+			</if>
+			<if test="ordSts == 1">
+				and a.ord_sts = 'S'
+			</if>
+			<if test="ordSts == 2">
+				and a.ord_sts = 'C'
+			</if>
+			<if test="ordSts == 3">
+				and a.ord_sts = 'W'
+			</if>
+		</where> 
+	</select>
+	
+	<select id="querydaysaleTotal" resultType="int">
+		select count(DISTINCT a.ord_dt)
+			from sunnyorder a left join sunnyorderinfo b on a.ord_no=b.ord_no left join sunnystock c on b.goods_id=c.goods_id
+		where a.ord_sts = 'S'
+		<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+			and a.merc_id = #{mercId}
+		</if>
+		<if test="starDate != null and starDate.trim() != ''">
+			and a.ord_dt &gt;= #{starDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and a.ord_dt &lt;= #{endDate}
+		</if>
+	</select>
+	
+	<select id="queryDaySale" resultType="io.sunny.modules.sunny.entity.SunnysaleEntity">
+		select a.ord_dt, sum(b.goods_bid) as pay_amt, sum(c.goods_cid) as cost_amt, count(DISTINCT a.ord_no) AS count
+			from sunnyorder a left join sunnyorderinfo b on a.ord_no=b.ord_no left join sunnystock c on b.goods_id=c.goods_id and a.merc_id=c.merc_id
+		where a.ord_sts = 'S'
+		<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+			and a.merc_id = #{mercId}
+		</if>
+		<if test="starDate != null and starDate.trim() != ''">
+			and a.ord_dt &gt;= #{starDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and a.ord_dt &lt;= #{endDate}
+		</if>
+			group by a.ord_dt order by a.ord_dt desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	 
+	<select id="querymonthsaleTotal" resultType="int">
+		select count(DISTINCT left(a.ord_dt, 6))
+			from sunnyorder a left join sunnyorderinfo b on a.ord_no=b.ord_no left join sunnystock c on b.goods_id=c.goods_id
+		where a.ord_sts = 'S'
+		<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+			and a.merc_id = #{mercId}
+		</if>
+		<if test="starDate != null and starDate.trim() != ''">
+			and a.ord_dt &gt;= #{starDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and a.ord_dt &lt;= #{endDate}
+		</if>
+	</select>
+	 
+	<select id="queryMonthSale" resultType="io.sunny.modules.sunny.entity.SunnysaleEntity">
+		select left(a.ord_dt, 6) as ord_dt, sum(b.goods_bid) as pay_amt, sum(c.goods_cid) as cost_amt, count(DISTINCT a.ord_no) AS count
+			from sunnyorder a left join sunnyorderinfo b on a.ord_no=b.ord_no left join sunnystock c on b.goods_id=c.goods_id and a.merc_id=c.merc_id
+		where a.ord_sts = 'S'
+		<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+			and a.merc_id = #{mercId}
+		</if>
+		<if test="starDate != null and starDate.trim() != ''">
+			and a.ord_dt &gt;= #{starDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and a.ord_dt &lt;= #{endDate}
+		</if>
+			group by left(a.ord_dt, 6) order by left(a.ord_dt, 6) desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryPageCount" resultType="int">
+		select count(*) from sunnyorder
+		<where> 
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and merc_id = #{mercId}
+			</if>
+			<if test="starDate != null and starDate.trim() != ''">
+				and ord_dt &gt;= #{starDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and ord_dt &lt;= #{endDate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryPageList" resultType="io.sunny.modules.sunny.entity.SunnyorderEntity">
+		select a.*, case a.ord_sts when 'S' THEN '成功' when 'C' then '取消' when 'w' then '待支付' end as ord_status , b.mbl_no from sunnyorder a left join sunnyuser b on a.use_id=b.user_id where a.ord_sts &lt;&gt; 'U'
+		<if test="starDate != null and starDate.trim() != ''">
+			and a.ord_dt &gt;= #{starDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and a.ord_dt &lt;= #{endDate}
+		</if>
+		<if test="mercId != null and mercId.trim() != ''">
+			and a.merc_id = #{mercId}
+		</if>
+		 order by a.ord_dt desc ,a.ord_tm desc limit #{offset}, 10
+	</select>
+	
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnyorderEntity">
+		insert into sunnyorder
+		(
+			`ord_no`, 
+			`ord_dt`, 
+			`ord_tm`, 
+			`ord_amt`, 
+			`free_amt`, 
+			`pay_amt`, 
+			`ord_sts`, 
+			`merc_id`, 
+			`user_type`, 
+			`use_id`, 
+			`pay_dt`, 
+			`pay_tm`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{ordNo}, 
+			#{ordDt}, 
+			#{ordTm}, 
+			#{ordAmt}, 
+			#{freeAmt}, 
+			#{payAmt}, 
+			#{ordSts}, 
+			#{mercId}, 
+			#{userType}, 
+			#{useId}, 
+			#{payDt}, 
+			#{payTm}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnyorderEntity">
+		update sunnyorder 
+		<set>
+			<if test="ordDt != null">`ord_dt` = #{ordDt}, </if>
+			<if test="ordTm != null">`ord_tm` = #{ordTm}, </if>
+			<if test="ordAmt != null">`ord_amt` = #{ordAmt}, </if>
+			<if test="freeAmt != null">`free_amt` = #{freeAmt}, </if>
+			<if test="payAmt != null">`pay_amt` = #{payAmt}, </if>
+			<if test="ordSts != null">`ord_sts` = #{ordSts}, </if>
+			<if test="mercId != null">`merc_id` = #{mercId}, </if>
+			<if test="userType != null">`user_type` = #{userType}, </if>
+			<if test="useId != null">`use_id` = #{useId}, </if>
+			<if test="payDt != null">`pay_dt` = #{payDt}, </if>
+			<if test="payTm != null">`pay_tm` = #{payTm}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where ord_no = #{ordNo}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnyorder where ord_no = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnyorder where ord_no in 
+		<foreach item="ordNo" collection="array" open="(" separator="," close=")">
+			#{ordNo}
+		</foreach>
+	</delete>
+
+</mapper>

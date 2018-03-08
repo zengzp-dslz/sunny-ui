@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.ProvcitycountryDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.ProvcitycountryEntity" id="provcitycountryMap">
+        <result property="provCd" column="prov_cd"/>
+        <result property="provNm" column="prov_nm"/>
+        <result property="cityCd" column="city_cd"/>
+        <result property="cityNm" column="city_nm"/>
+        <result property="countryCd" column="country_cd"/>
+        <result property="countryNm" column="country_nm"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		select * from provcitycountry where prov_cd = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		select * from provcitycountry
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by prov_cd desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from provcitycountry 
+	</select>
+	
+	<select id="selectProv" resultType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		select * from provcitycountry group by prov_cd 
+	</select>
+	
+	<select id="selectCity" resultType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		select * from provcitycountry where prov_cd = #{provId} group by city_cd
+	</select>
+	
+	<select id="selectCountry" resultType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		select * from provcitycountry where city_cd = #{cityId}
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		insert into provcitycountry
+		(
+			`prov_cd`, 
+			`prov_nm`, 
+			`city_cd`, 
+			`city_nm`, 
+			`country_cd`, 
+			`country_nm`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{provCd}, 
+			#{provNm}, 
+			#{cityCd}, 
+			#{cityNm}, 
+			#{countryCd}, 
+			#{countryNm}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.ProvcitycountryEntity">
+		update provcitycountry 
+		<set>
+			<if test="provNm != null">`prov_nm` = #{provNm}, </if>
+			<if test="cityCd != null">`city_cd` = #{cityCd}, </if>
+			<if test="cityNm != null">`city_nm` = #{cityNm}, </if>
+			<if test="countryCd != null">`country_cd` = #{countryCd}, </if>
+			<if test="countryNm != null">`country_nm` = #{countryNm}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where prov_cd = #{provCd}
+	</update>
+	
+	<delete id="delete">
+		delete from provcitycountry where prov_cd = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from provcitycountry where prov_cd in 
+		<foreach item="provCd" collection="array" open="(" separator="," close=")">
+			#{provCd}
+		</foreach>
+	</delete>
+
+</mapper>

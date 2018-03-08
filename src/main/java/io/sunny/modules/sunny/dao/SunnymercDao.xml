@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnymercDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnymercEntity" id="sunnymercMap">
+        <result property="mercId" column="merc_id"/>
+        <result property="mercNm" column="merc_nm"/>
+        <result property="mercAddr" column="merc_addr"/>
+        <result property="mercType" column="merc_type"/>
+        <result property="mercAttr" column="merc_attr"/>
+        <result property="mercTele" column="merc_tele"/>
+        <result property="mercProv" column="merc_prov"/>
+        <result property="mercCity" column="merc_city"/>
+        <result property="mercCountry" column="merc_country"/>
+        <result property="mercSts" column="merc_sts"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="mercTopic" column="merc_topic"/>
+        <result property="mercDesc" column="merc_desc"/>
+        <result property="tmSmp" column="tm_smp"/>
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+    
+    <resultMap type="io.sunny.modules.sunny.entity.SunnymercEntity" id="mercMap">
+        <result property="mercId" column="merc_id"/>
+        <result property="mercNm" column="merc_nm"/>
+        <result property="mercAddr" column="merc_addr"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnymercEntity">
+		select * from sunnymerc where merc_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnymercEntity">
+		select *, merc_id as id, merc_nm as name from sunnymerc
+		<where>
+			<if test="mercId != null and mercId.trim() != ''">
+				and `merc_id` like concat('%',#{mercId},'%')
+			</if>
+			<if test="mercSts != null and mercSts.trim() != ''">
+				and `merc_sts` like concat('%',#{mercSts},'%')
+			</if>
+			<if test="deviceId != null and deviceId.trim() != ''">
+				and `device_id` = #{deviceId}
+			</if>
+			<if test="mercProv != null and mercProv.trim() != ''">
+				and `merc_prov` = #{mercProv}
+			</if>
+			<if test="mercCity != null and mercCity.trim() != ''">
+				and `merc_city` = #{mercCity}
+			</if>
+			<if test="mercCountry != null and mercCountry.trim() != ''">
+				and `merc_country` = #{mercCountry}
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by merc_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sunnymerc
+		<where>
+			<if test="mercId != null and mercId.trim() != ''">
+				and `merc_id` like concat('%',#{mercId},'%')
+			</if>
+			<if test="mercSts != null and mercSts.trim() != ''">
+				and `merc_sts` like concat('%',#{mercSts},'%')
+			</if>
+			<if test="deviceId != null and deviceId.trim() != ''">
+				and `device_id` = #{deviceId}
+			</if>
+			<if test="mercProv != null and mercProv.trim() != ''">
+				and `merc_prov` = #{mercProv}
+			</if>
+			<if test="mercCity != null and mercCity.trim() != ''">
+				and `merc_city` = #{mercCity}
+			</if>
+			<if test="mercCountry != null and mercCountry.trim() != ''">
+				and `merc_country` = #{mercCountry}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryPageList" resultMap="mercMap">
+		select merc_id, merc_nm, merc_addr, tm_smp from sunnymerc limit #{offset}, 10
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnymercEntity">
+		insert into sunnymerc
+		(
+			`merc_id`, 
+			`merc_nm`, 
+			`merc_addr`, 
+			`merc_type`, 
+			`merc_attr`, 
+			`merc_tele`, 
+			`merc_prov`, 
+			`merc_city`, 
+			`merc_country`, 
+			`merc_sts`, 
+			`device_id`, 
+			`merc_topic`, 
+			`merc_desc`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{mercId}, 
+			#{mercNm}, 
+			#{mercAddr}, 
+			#{mercType}, 
+			#{mercAttr}, 
+			#{mercTele}, 
+			#{mercProv}, 
+			#{mercCity}, 
+			#{mercCountry}, 
+			#{mercSts}, 
+			#{deviceId}, 
+			#{mercTopic}, 
+			#{mercDesc}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnymercEntity">
+		update sunnymerc 
+		<set>
+			<if test="mercNm != null">`merc_nm` = #{mercNm}, </if>
+			<if test="mercAddr != null">`merc_addr` = #{mercAddr}, </if>
+			<if test="mercType != null">`merc_type` = #{mercType}, </if>
+			<if test="mercAttr != null">`merc_attr` = #{mercAttr}, </if>
+			<if test="mercTele != null">`merc_tele` = #{mercTele}, </if>
+			<if test="mercProv != null">`merc_prov` = #{mercProv}, </if>
+			<if test="mercCity != null">`merc_city` = #{mercCity}, </if>
+			<if test="mercCountry != null">`merc_country` = #{mercCountry}, </if>
+			<if test="mercSts != null">`merc_sts` = #{mercSts}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="mercTopic != null">`merc_topic` = #{mercTopic}, </if>
+			<if test="mercDesc != null">`merc_desc` = #{mercDesc}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where merc_id = #{mercId}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnymerc where merc_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnymerc where merc_id in 
+		<foreach item="mercId" collection="array" open="(" separator="," close=")">
+			#{mercId}
+		</foreach>
+	</delete>
+
+</mapper>

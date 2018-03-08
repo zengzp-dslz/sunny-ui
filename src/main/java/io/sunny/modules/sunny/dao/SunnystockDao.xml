@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnystockDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnystockEntity" id="sunnystockMap">
+        <result property="mercId" column="merc_id"/>
+        <result property="mercNm" column="merc_nm"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="barcode" column="barcode"/>
+        <result property="goodsCid" column="goods_cid"/>
+        <result property="goodsBid" column="goods_bid"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="goodsIns" column="goods_ins"/>
+        <result property="updateDt" column="update_dt"/>
+        <result property="updateTm" column="update_tm"/>
+        <result property="tmSmp" column="tm_smp"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		select * from sunnystock where stock_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		select a.*,b.merc_nm,c.goods_name from sunnystock a left join sunnymerc b on a.merc_id=b.merc_id left join sunnygoods c on a.goods_id=c.goods_id
+		<where>
+			<if test="mercId != null and mercId != 0 and mercId.trim() != ''">
+				and a.merc_id = #{mercId}
+			</if>
+			<if test="barcode != null and barcode.trim() != ''">
+				and c.barcode like concat('%',#{barcode},'%')
+			</if>
+		</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by b.merc_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+ 		select count(sm.merc_id)
+		   from 
+		(select merc_id,barcode,sum(goods_num) kc,goods_cid,goods_bid,update_dt,update_tm,tm_smp from sunnystock st where st.merc_id=#{mercId} group by barcode) t1  left join (
+		select g.barcode,count(*) sskc from sunnyorderinfo s ,sunnyorder  o,sunnygoods g
+		 where s.ord_no=o.ord_no and s.goods_id=g.goods_id and o.ord_sts='S' and o.merc_id=#{mercId} and concat(o.pay_dt,o.pay_tm)>='20180305144000' group by  g.barcode )  tp 
+		 on t1.barcode=tp.barcode , sunnygoods sg , sunnymerc sm where t1.barcode=sg.barcode and t1.merc_id=sm.merc_id
+		 <if test="status != 0">
+		 	and tp.sskc is not null 
+		 </if>
+	</select>
+	 
+	 <select id="getStock" resultType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		select * from sunnystock where merc_id = #{mercId} and goods_id = #{goodsId}
+	</select>
+	
+	 <select id="queryPageList" resultType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		select a.*,b.merc_nm,c.goods_name from sunnystock a left join sunnymerc b on a.merc_id=b.merc_id left join sunnygoods c on a.goods_id=c.goods_id
+		 where a.merc_id = #{mercId} 
+		 <if test="barcode != null and barcode.trim() != ''">
+			and c.barcode = #{barcode}
+		 </if>
+		 order by goods_ins limit #{offset}, 10
+	</select>
+	
+	<select id="queryPageCount" resultType="int">
+		select count(a.stock_id) from sunnystock a left join sunnymerc b on a.merc_id=b.merc_id left join sunnygoods c on a.goods_id=c.goods_id
+		 <if test="barcode != null and barcode.trim() != ''">
+			and c.barcode = #{barcode}
+		 </if>
+	</select>
+	
+	<select id="queryStock" resultType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		select sm.merc_id,sm.merc_nm, sg.goods_id, sg.goods_name, t1.barcode,t1.goods_cid,t1.goods_bid,t1.kc as goods_num, ifnull(t1.kc-tp.sskc ,t1.kc) as goods_ins,t1.update_dt,t1.update_tm,t1.tm_smp -- tp.barcode,tp.sskc
+		   from 
+		(select merc_id,barcode,sum(goods_num) kc,goods_cid,goods_bid,update_dt,update_tm,tm_smp from sunnystock st where st.merc_id=#{mercId} group by barcode) t1  left join (
+		select g.barcode,count(*) sskc from sunnyorderinfo s ,sunnyorder  o,sunnygoods g
+		 where s.ord_no=o.ord_no and s.goods_id=g.goods_id and o.ord_sts='S' and o.merc_id=#{mercId} and concat(o.pay_dt,o.pay_tm)>='20180305144000' group by  g.barcode )  tp 
+		 on t1.barcode=tp.barcode , sunnygoods sg , sunnymerc sm where t1.barcode=sg.barcode and t1.merc_id=sm.merc_id
+		 <if test="status != 0">
+		 	and tp.sskc is not null 
+		 </if>
+		order by goods_ins, goods_num
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>		
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnystockEntity" useGeneratedKeys="true">
+		insert into sunnystock
+		(
+			`merc_id`, 
+			`goods_id`, 
+			`barcode`, 
+			`goods_cid`, 
+			`goods_bid`, 
+			`goods_num`, 
+			`goods_ins`, 
+			`update_dt`, 
+			`update_tm`, 
+			`tm_smp`
+		)
+		values
+		(
+			#{mercId}, 
+			#{goodsId}, 
+			#{barcode}, 
+			#{goodsCid}, 
+			#{goodsBid}, 
+			#{goodsNum}, 
+			#{goodsIns}, 
+			#{updateDt}, 
+			#{updateTm}, 
+			#{tmSmp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnystockEntity">
+		update sunnystock 
+		<set>
+			<if test="barcode != null">`barcode` = #{barcode}, </if>
+			<if test="goodsCid != null">`goods_cid` = #{goodsCid}, </if>
+			<if test="goodsBid != null">`goods_bid` = #{goodsBid}, </if>
+			<if test="goodsNum != null">`goods_num` = #{goodsNum}, </if>
+			<if test="goodsIns != null">`goods_ins` = #{goodsIns}, </if>
+			<if test="updateDt != null">`update_dt` = #{updateDt}, </if>
+			<if test="updateTm != null">`update_tm` = #{updateTm}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where merc_id = #{mercId} and goods_id = #{goodsId}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnystock where stock_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnystock where stock_id in 
+		<foreach item="stockId" collection="array" open="(" separator="," close=")">
+			#{stockId}
+		</foreach>
+	</delete>
+
+</mapper>

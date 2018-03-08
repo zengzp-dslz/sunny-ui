@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnygoodsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.sunny.modules.sunny.entity.SunnygoodsEntity"
+		id="sunnygoodsMap">
+		<result property="goodsId" column="goods_id" />
+		<result property="barcode" column="barcode" />
+		<result property="goodsName" column="goods_name" />
+		<result property="goodsSname" column="goods_sname" />
+		<result property="goodsType" column="goods_type" />
+		<result property="goodsRemark" column="goods_remark" />
+		<result property="goodsNum" column="goods_num" />
+		<result property="goodsExp" column="goods_exp" />
+		<result property="goodsBid" column="goods_bid" />
+		<result property="goodsSize" column="goods_size" />
+		<result property="createDt" column="create_dt" />
+		<result property="createTm" column="create_tm" />
+		<result property="createUser" column="create_user" />
+		<result property="updateDt" column="update_dt" />
+		<result property="updateTm" column="update_tm" />
+		<result property="updateUser" column="update_user" />
+		<result property="tmSmp" column="tm_smp" />
+	</resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnygoodsEntity">
+		select * from sunnygoods
+		where goods_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnygoodsEntity">
+		select * from sunnygoods
+		<where>
+			<if test="goodsId != null and goodsId.trim() != ''">
+				and `goods_id` like concat('%',#{goodsId},'%')
+			</if>
+			<if test="barcode != null and barcode.trim() != ''">
+				and `barcode` like concat('%',#{barcode},'%')
+			</if>
+			<if test="goodsBid != null and goodsBid.trim() != ''">
+				and `goods_bid` = #{goodsBid}
+			</if>
+			<if test="goodsName != null and goodsName.trim() != ''">
+				and `goods_name` like concat('%',#{goodsName},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by goods_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from sunnygoods
+		<where>
+			<if test="goodsId != null and goodsId.trim() != ''">
+				and `goods_id` like concat('%',#{goodsId},'%')
+			</if>
+			<if test="barcode != null and barcode.trim() != ''">
+				and `barcode` like concat('%',#{barcode},'%')
+			</if>
+			<if test="goodsBid != null and goodsBid.trim() != ''">
+				and `goods_bid` = #{goodsBid}
+			</if>
+			<if test="goodsName != null and goodsName.trim() != ''">
+				and `goods_name` like concat('%',#{goodsName},'%')
+			</if>
+		</where>
+	</select>
+	<select id="newGoodsId" resultType="String">
+		select concat(SUBSTR(max(goods_id),1,1),LPAD(SUBSTR(max(goods_id),2)+1,7,0)) goodsId from sunnygoods;
+	</select>
+	<select id="getGoodsByBarcode" resultType="io.sunny.modules.sunny.entity.SunnygoodsEntity">
+		select * from sunnygoods where barcode = #{barcode}
+	</select>
+	
+	
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnygoodsEntity">
+		insert into sunnygoods
+		(
+		`goods_id`,
+		`barcode`,
+		`goods_name`,
+		`goods_sname`,
+		`goods_type`,
+		`goods_remark`,
+		`goods_num`,
+		`goods_exp`,
+		`goods_bid`,
+		`goods_size`,
+		`create_dt`,
+		`create_tm`,
+		`create_user`,
+		`update_dt`,
+		`update_tm`,
+		`update_user`,
+		`tm_smp`
+		)
+		values
+		(
+		#{goodsId},
+		#{barcode},
+		#{goodsName},
+		#{goodsSname},
+		#{goodsType},
+		#{goodsRemark},
+		#{goodsNum},
+		#{goodsExp},
+		#{goodsBid},
+		#{goodsSize},
+		#{createDt},
+		#{createTm},
+		#{createUser},
+		#{updateDt},
+		#{updateTm},
+		#{updateUser},
+		#{tmSmp}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnygoodsEntity">
+		update sunnygoods
+		<set>
+			<if test="barcode != null">`barcode` = #{barcode}, </if>
+			<if test="goodsName != null">`goods_name` = #{goodsName}, </if>
+			<if test="goodsSname != null">`goods_sname` = #{goodsSname}, </if>
+			<if test="goodsType != null">`goods_type` = #{goodsType}, </if>
+			<if test="goodsRemark != null">`goods_remark` = #{goodsRemark}, </if>
+			<if test="goodsNum != null">`goods_num` = #{goodsNum}, </if>
+			<if test="goodsExp != null">`goods_exp` = #{goodsExp}, </if>
+			<if test="goodsBid != null">`goods_bid` = #{goodsBid}, </if>
+			<if test="goodsSize != null">`goods_size` = #{goodsSize}, </if>
+			<if test="createDt != null">`create_dt` = #{createDt}, </if>
+			<if test="createTm != null">`create_tm` = #{createTm}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="updateDt != null">`update_dt` = #{updateDt}, </if>
+			<if test="updateTm != null">`update_tm` = #{updateTm}, </if>
+			<if test="updateUser != null">`update_user` = #{updateUser}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}</if>
+		</set>
+		where goods_id = #{goodsId}
+	</update>
+
+	<delete id="delete">
+		delete from sunnygoods where goods_id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from sunnygoods where goods_id in
+		<foreach item="goodsId" collection="array" open="(" separator=","
+			close=")">
+			#{goodsId}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.sunny.modules.sunny.dao.SunnyuserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.sunny.modules.sunny.entity.SunnyuserEntity" id="sunnyuserMap">
+        <result property="userType" column="user_type"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="sex" column="sex"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="country" column="country"/>
+        <result property="prov" column="prov"/>
+        <result property="city" column="city"/>
+        <result property="nationCode" column="nation_code"/>
+        <result property="mblNo" column="mbl_no"/>
+        <result property="regDt" column="reg_dt"/>
+        <result property="regTm" column="reg_tm"/>
+        <result property="ip" column="ip"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="addr" column="addr"/>
+        <result property="tmSmp" column="tm_smp"/>
+        <result property="isBlack" column="is_black"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.sunny.modules.sunny.entity.SunnyuserEntity">
+		select * from sunnyuser where user_type = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.sunny.modules.sunny.entity.SunnyuserEntity">
+		select * from sunnyuser
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by user_type desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sunnyuser 
+	</select>
+	 
+	<insert id="save" parameterType="io.sunny.modules.sunny.entity.SunnyuserEntity">
+		insert into sunnyuser
+		(
+			`user_type`, 
+			`user_id`, 
+			`nick_name`, 
+			`sex`, 
+			`avatar_url`, 
+			`country`, 
+			`prov`, 
+			`city`, 
+			`nation_code`, 
+			`mbl_no`, 
+			`reg_dt`, 
+			`reg_tm`, 
+			`ip`, 
+			`longitude`, 
+			`latitude`, 
+			`addr`, 
+			`tm_smp`, 
+			`is_black`
+		)
+		values
+		(
+			#{userType}, 
+			#{userId}, 
+			#{nickName}, 
+			#{sex}, 
+			#{avatarUrl}, 
+			#{country}, 
+			#{prov}, 
+			#{city}, 
+			#{nationCode}, 
+			#{mblNo}, 
+			#{regDt}, 
+			#{regTm}, 
+			#{ip}, 
+			#{longitude}, 
+			#{latitude}, 
+			#{addr}, 
+			#{tmSmp}, 
+			#{isBlack}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.sunny.modules.sunny.entity.SunnyuserEntity">
+		update sunnyuser 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="nickName != null">`nick_name` = #{nickName}, </if>
+			<if test="sex != null">`sex` = #{sex}, </if>
+			<if test="avatarUrl != null">`avatar_url` = #{avatarUrl}, </if>
+			<if test="country != null">`country` = #{country}, </if>
+			<if test="prov != null">`prov` = #{prov}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="nationCode != null">`nation_code` = #{nationCode}, </if>
+			<if test="mblNo != null">`mbl_no` = #{mblNo}, </if>
+			<if test="regDt != null">`reg_dt` = #{regDt}, </if>
+			<if test="regTm != null">`reg_tm` = #{regTm}, </if>
+			<if test="ip != null">`ip` = #{ip}, </if>
+			<if test="longitude != null">`longitude` = #{longitude}, </if>
+			<if test="latitude != null">`latitude` = #{latitude}, </if>
+			<if test="addr != null">`addr` = #{addr}, </if>
+			<if test="tmSmp != null">`tm_smp` = #{tmSmp}, </if>
+			<if test="isBlack != null">`is_black` = #{isBlack}</if>
+		</set>
+		where user_type = #{userType}
+	</update>
+	
+	<delete id="delete">
+		delete from sunnyuser where user_type = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sunnyuser where user_type in 
+		<foreach item="userType" collection="array" open="(" separator="," close=")">
+			#{userType}
+		</foreach>
+	</delete>
+
+</mapper>

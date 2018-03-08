@@ -1,0 +1,8 @@
+version: '2'
+services:
+  sunny-fastplus:
+    image: sunny/security
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.profiles.active=dev

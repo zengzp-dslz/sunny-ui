@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.goodsId" @keyup.enter="query" placeholder="商品编号">
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.barcode" @keyup.enter="query" placeholder="条形码">
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.goodsName" @keyup.enter="query" placeholder="商品名称">
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.goodsBid" @keyup.enter="query" placeholder="单价">
+			</div>
+			<a class="btn btn-primary" @click="query"><i class="fa fa-search"></i>&nbsp;查看</a>
+			
+			<#if shiro.hasPermission("sunnygoods:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("sunnygoods:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("sunnygoods:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>	
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">条形码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.barcode" placeholder="条形码"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">商品名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsName" placeholder="商品名称"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">商品简称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsSname" placeholder="商品简称"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">商品类型</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsType" placeholder="商品类型"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">描述</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsRemark" placeholder="描述"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">库存</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsNum" placeholder="库存"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">过期天数</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsExp" placeholder="过期天数"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">单价(分)</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsBid" placeholder="单价"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">规格</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnygoods.goodsSize" placeholder="规格"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/sunny/sunnygoods.js?_${.now?long}"></script>
+</body>
+</html>

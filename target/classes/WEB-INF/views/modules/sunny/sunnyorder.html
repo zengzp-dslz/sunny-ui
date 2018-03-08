@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" style="cursor:pointer;" v-model="q.mercNm" @click="mercTree" readonly="readonly" placeholder="选择便利店"/>
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.ordNo" @keyup.enter="query" placeholder="订单号">
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.mblNo" @keyup.enter="query" placeholder="手机号码">
+			</div>
+			<div class="form-group col-sm-2">
+				<select class="form-control" v-model="q.ordSts" placeholder="订单状态">
+					<option value="0">全部订单</option>
+					<option value="1">成功订单</option>
+					<option value="2">取消订单</option>
+					<option value="3">待支付订单</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-2">
+				<date-picker type="date" placeholder="开始时间" style="width: 100%" v-model="q.starDate" @keyup.enter="query" ></date-picker>
+			</div>
+			<div class="form-group col-sm-2">
+				<date-picker type="date" placeholder="结束时间" style="width: 100%" v-model="q.endDate" @keyup.enter="query"></date-picker>
+			</div>
+			<a class="btn btn-primary" @click="query"><i class="fa fa-search"></i>&nbsp;查看</a>
+			<#if shiro.hasPermission("sunnyorder:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("sunnyorder:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("sunnyorder:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">订单日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.ordDt" placeholder="订单日期"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">订单时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.ordTm" placeholder="订单时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">订单金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.ordAmt" placeholder="订单金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">优惠金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.freeAmt" placeholder="优惠金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">支付金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.payAmt" placeholder="支付金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">状态</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.ordSts" placeholder="状态"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.mercId" placeholder="id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">用户id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.userType" placeholder="用户id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">用户id</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.useId" placeholder="用户id"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">支付日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.payDt" placeholder="支付日期"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">支付时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.payTm" placeholder="支付时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">时间戳</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnyorder.tmSmp" placeholder="时间戳"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<!-- 选择便利店 -->
+<div id="mercLayer" style="display: none;padding:10px;">
+	<ul id="mercTree" class="ztree"></ul>
+</div>
+<script src="${request.contextPath}/statics/js/modules/sunny/sunnyorder.js?_${.now?long}"></script>
+</body>
+</html>

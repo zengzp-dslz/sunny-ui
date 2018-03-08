@@ -1,0 +1,41 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+  port: 9080
+  context-path: /sunnyui
+spring:
+  profiles:
+    active: dev
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  http:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  redis:
+    database: 0
+    host: 172.16.0.2
+    port: 6379
+    password: yayannet2018
+    timeout: 6000
+    pool:
+      max-active: 1000
+      max-wait: -1
+      max-idle: 10
+      min-idle: 5
+mybatis:
+  mapperLocations: classpath:mapper/**/*.xml
+  configLocation: classpath:mybatis.xml
+sunny:
+  redis:
+    open: true
+  shiro:
+    redis: true
+http:
+  max-total: 50
+  default-max-per-route: 5
+  max-idle-time: 60000

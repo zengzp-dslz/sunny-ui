@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" style="cursor:pointer;" v-model="q.mercNm" @click="mercTree" readonly="readonly" placeholder="便利店"/>
+			</div>
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.barcode" @keyup.enter="query" placeholder="条形码">
+			</div>
+			<div class="form-group col-sm-2">
+				<select class="form-control" v-model="q.status" placeholder="订单状态">
+					<option value="0">全部库存</option>
+					<option value="1">库存差异对比</option>
+				</select>
+			</div>
+			<a class="btn btn-primary" @click="query"><i class="fa fa-search"></i>&nbsp;查看</a>
+			<#if shiro.hasPermission("sunnystock:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("sunnystock:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("sunnystock:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+									
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">便利店</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" style="cursor:pointer;" v-model="sunnystock.mercNm" @click="mercTree" readonly="readonly" placeholder="便利店"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">条形码</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnystock.barcode" placeholder="条形码"/><a class="btn btn-primary" @click="queryGoods"><i class="fa fa-search"></i>&nbsp;查看</a>
+			    </div>
+			</div>
+									
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">商品名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnystock.goodsNm" placeholder="商品名称" readonly="readonly"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">售价（单位分）</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnystock.goodsBid" placeholder="售价（单价）" readonly="readonly"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">成本价（单位分）</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnystock.goodsCid" placeholder="成本价"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">数量</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="sunnystock.goodsIns" placeholder="入库数量"/>
+			    </div>
+			</div>
+									
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<!-- 选择便利店 -->
+<div id="mercLayer" style="display: none;padding:10px;">
+	<ul id="mercTree" class="ztree"></ul>
+</div>
+<script src="${request.contextPath}/statics/js/modules/sunny/sunnystock.js?_${.now?long}"></script>
+</body>
+</html>
