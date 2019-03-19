@@ -3,9 +3,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
-      url: jdbc:mysql://172.16.0.13:3306/sunnyui?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-      username: sunuiadm
-      password: sunuiadm#123
+      url: jdbc:mysql://127.0.0.1:3306/sunnyui?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      username: test
+      password: test#123
       initial-size: 10
       max-active: 100
       min-idle: 10
