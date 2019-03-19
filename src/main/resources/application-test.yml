@@ -3,9 +3,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
-      url: jdbc:mysql://119.29.98.177:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-      username: sunuiadm
-      password: sunuiadm#123
+      url: jdbc:mysql://127.0.0.1:3306/renren_security?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      username: test
+      password: test
       initial-size: 10
       max-active: 100
       min-idle: 10
@@ -35,7 +35,7 @@ custom:
     sunny:
       type: com.alibaba.druid.pool.DruidDataSource
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://119.29.98.177:3306/sunny?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://127.0.0.1:3306/sunny?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
       username: sunadm
       password: sunadm#123
 wechat:
