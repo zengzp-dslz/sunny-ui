@@ -40,9 +40,3 @@ custom:
            url: jdbc:mysql://127.0.0.1:3306/sunny?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
            username: sunadm
            password: sunadm#123
-wechat:
-  appid: wx0f5c757aed155fbf
-  sercret: 141b0ca1335e2bdb4f696cb76ac9ca6b
-  access-token-url: https://api.weixin.qq.com/cgi-bin/token
-  acode-url: https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=
-  acode-path: /Users/zhang_dy/Desktop
